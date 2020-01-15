@@ -31,9 +31,7 @@ class Tablero extends Component {
          * Esto evita tomar en cuenta a clicks sobre el mismo cuadro*/
         if (this.nroClicks % 2 === 0 && i !==this.i_anterior && j !== this.j_anterior) {
             
-            
-            const colorPiezaActual = this.getColorPiezaActual(i,j);
-            const colorPiezaAnterior = this.getColorPiezaAnterior(this.i_anterior,this.j_anterior);
+            const colorPiezaAnterior = this.getColorPieza(this.i_anterior,this.j_anterior);
             
             let unPasoALaDerecha;
             let unPasoALaIzquierda;
@@ -114,21 +112,7 @@ class Tablero extends Component {
         }
 
     }
-    getColorPiezaActual(i, j) {
-       
-        const cuadroActual = this.state.cuadros[i][j];
-        const caracter = cuadroActual.charAt(cuadroActual.length - 1) ;
-        let colorActual;
-        
-        if (caracter === 'N') {
-            colorActual = 'Negro';
-        
-        }else{
-            colorActual = 'Blanco';
-        }
-        return colorActual;
-    }
-    getColorPiezaAnterior( x, y) {
+    getColorPieza(x, y) {
         
         const cuadroAnterior = this.state.cuadros[x][y];
         const caracter = cuadroAnterior.charAt(cuadroAnterior.length - 1) ;
@@ -145,17 +129,28 @@ class Tablero extends Component {
     moverPieza(i,j,i_anterior,j_anterior,i_actual, j_actual, j_actual_izq,dos_pasos_izq=null) {
 
         const cuadros = this.state.cuadros.slice();
-        cuadros[i][j] = cuadros[i_anterior][j_anterior];
-        cuadros[i_anterior][j_anterior] = ' ';
         
-        if (dos_pasos_izq) {//se movio a la izquierda
-            cuadros[i_actual][j_actual_izq] = ' ';
+        if (dos_pasos_izq) {//se intento comer una pieza hacia a la izquierda
+            // y la pieza que come y la que se intenta comer son de colores distintos
+            if (this.getColorPieza(i_anterior,j_anterior) !== this.getColorPieza(i_actual, j_actual_izq)) {
+                cuadros[i_actual][j_actual_izq] = ' ';
+            }else{
+                return;
+            }
+            
         
-        }else{//se movio a la derecha
-            if (dos_pasos_izq !== null) {
-                cuadros[i_actual][j_actual] = ' ';
+        }else{
+            if (dos_pasos_izq !== null) {//se intento comer una pieza hacia a la derecha
+                // y la pieza que come y la que se intenta comer son de colores distintos
+                if (this.getColorPieza(i_anterior,j_anterior) !== this.getColorPieza(i_actual, j_actual)) {
+                    cuadros[i_actual][j_actual] = ' ';
+                }else{
+                    return;
+                }
             }
         }
+        cuadros[i][j] = cuadros[i_anterior][j_anterior];
+        cuadros[i_anterior][j_anterior] = ' ';
             
         this.setState({
             cuadros : cuadros,
@@ -170,7 +165,7 @@ class Tablero extends Component {
                                 return(
                                     <Cuadro key={index2} 
                                     value={value2.length >1 ? value2.replace(value2.charAt(value2.length-1),'') : value2} 
-                                    color = {this.getColorPiezaActual(index1, index2)}
+                                    color = {this.getColorPieza(index1, index2)}
                                     onClick={ value2 ? ()=>{this.handleClick(index1, index2)} : null}
                                     />
                                     )
