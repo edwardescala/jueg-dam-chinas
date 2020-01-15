@@ -1,0 +1,15 @@
+.cuadro {
+    height: 50px;
+    width: 50px;
+}
+.cuadro-negro{
+    background: rgb(71, 71, 71);
+    color: rgba(240, 248, 255, 0.876);
+}
+.cuadro-blanco {
+    background: rgba(255, 255, 255, 0.89);
+    
+}
+.pieza-blanca {
+    color: brown;
+}
