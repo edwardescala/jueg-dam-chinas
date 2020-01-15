@@ -133,7 +133,12 @@ class Tablero extends Component {
         if (dos_pasos_izq) {//se intento comer una pieza hacia a la izquierda
             // y la pieza que come y la que se intenta comer son de colores distintos
             if (this.getColorPieza(i_anterior,j_anterior) !== this.getColorPieza(i_actual, j_actual_izq)) {
-                cuadros[i_actual][j_actual_izq] = ' ';
+                if (cuadros[i_actual][j_actual_izq].length > 1) {
+                    cuadros[i_actual][j_actual_izq] = ' ';
+                }else{
+                    return;
+                }
+                
             }else{
                 return;
             }
@@ -143,7 +148,12 @@ class Tablero extends Component {
             if (dos_pasos_izq !== null) {//se intento comer una pieza hacia a la derecha
                 // y la pieza que come y la que se intenta comer son de colores distintos
                 if (this.getColorPieza(i_anterior,j_anterior) !== this.getColorPieza(i_actual, j_actual)) {
-                    cuadros[i_actual][j_actual] = ' ';
+                    if (cuadros[i_actual][j_actual].length > 1) {
+                        cuadros[i_actual][j_actual] = ' '; 
+                    }else{
+                        return;
+                    }
+                    
                 }else{
                     return;
                 }
