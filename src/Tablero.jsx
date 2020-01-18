@@ -16,6 +16,7 @@ class Tablero extends Component {
                 ['', 'peonN','', 'peonN', '', 'peonN', '', 'peonN'],
                 ['arfilN', '', 'caballoN', '', 'arfilN', '', 'caballoN', ''],
             ],
+            juegan_las_blancas : true,
         }
         this.nroClicks = 0; 
        this.i_anterior = null;//posicion i  anterior
@@ -129,10 +130,10 @@ class Tablero extends Component {
     moverPieza(i,j,i_anterior,j_anterior,i_actual, j_actual, j_actual_izq,dos_pasos_izq=null) {
 
         const cuadros = this.state.cuadros.slice();
-        
+        const color_pieza = this.getColorPieza(i_anterior,j_anterior);
         if (dos_pasos_izq) {//se intento comer una pieza hacia a la izquierda
             // y la pieza que come y la que se intenta comer son de colores distintos
-            if (this.getColorPieza(i_anterior,j_anterior) !== this.getColorPieza(i_actual, j_actual_izq)) {
+            if ( color_pieza !== this.getColorPieza(i_actual, j_actual_izq)) {
                 if (cuadros[i_actual][j_actual_izq].length > 1) {
                     cuadros[i_actual][j_actual_izq] = ' ';
                 }else{
@@ -147,7 +148,7 @@ class Tablero extends Component {
         }else{
             if (dos_pasos_izq !== null) {//se intento comer una pieza hacia a la derecha
                 // y la pieza que come y la que se intenta comer son de colores distintos
-                if (this.getColorPieza(i_anterior,j_anterior) !== this.getColorPieza(i_actual, j_actual)) {
+                if (color_pieza !== this.getColorPieza(i_actual, j_actual)) {
                     if (cuadros[i_actual][j_actual].length > 1) {
                         cuadros[i_actual][j_actual] = ' '; 
                     }else{
@@ -159,30 +160,38 @@ class Tablero extends Component {
                 }
             }
         }
+        if ( (this.state.juegan_las_blancas && color_pieza === 'Negro') || (!this.state.juegan_las_blancas && color_pieza === 'Blanco')) {
+            return;
+        }
         cuadros[i][j] = cuadros[i_anterior][j_anterior];
         cuadros[i_anterior][j_anterior] = ' ';
             
         this.setState({
             cuadros : cuadros,
+            juegan_las_blancas : !this.state.juegan_las_blancas,
         })
     }
     render() {
+        const turno = this.state.juegan_las_blancas ? 'juegan las blancas' : 'juegan las negras';
         return (
-            <div className="contenedor-filas">
-                    {
-                        this.state.cuadros.map((value1, index1) => {
-                           return value1.map((value2, index2) => {
-                                return(
-                                    <Cuadro key={index2} 
-                                    value={value2.length >1 ? value2.replace(value2.charAt(value2.length-1),'') : value2} 
-                                    color = {this.getColorPieza(index1, index2)}
-                                    onClick={ value2 ? ()=>{this.handleClick(index1, index2)} : null}
-                                    />
-                                    )
-                                })
-                        })
-                        
-                    }
+            <div className = "contenedor">
+                <div>{turno}</div>
+                <div className="contenedor-filas">
+                        {
+                            this.state.cuadros.map((value1, index1) => {
+                            return value1.map((value2, index2) => {
+                                    return(
+                                        <Cuadro key={index2} 
+                                        value={value2.length >1 ? value2.replace(value2.charAt(value2.length-1),'') : value2} 
+                                        color = {this.getColorPieza(index1, index2)}
+                                        onClick={ value2 ? ()=>{this.handleClick(index1, index2)} : null}
+                                        />
+                                        )
+                                    })
+                            })
+                            
+                        }
+                </div>
             </div>
         );
     }
