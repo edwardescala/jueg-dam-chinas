@@ -17,6 +17,7 @@ class Tablero extends Component {
                 ['arfilN', '', 'caballoN', '', 'arfilN', '', 'caballoN', ''],
             ],
             juegan_las_blancas : true,
+            
         }
         this.clicks = 0; 
         this.i_anterior = null; //posicion i  anterior
@@ -134,19 +135,15 @@ class Tablero extends Component {
         
         if (dos_pasos_izq) {//se intento comer una pieza hacia la izquierda
             
-            if (this.piezaCome(cuadros, posI_actual, posJ_izq)) {
-                
-            }else{
+            if (!this.piezaCome(cuadros, posI_actual, posJ_izq)) {
                 return;
             }
         
         }else{
             if (dos_pasos_izq !== null) {//se intento comer una pieza hacia a lreturn;a derecha
 
-                if (this.piezaCome(cuadros, posI_actual, posJ_der)) {
-                   
-                }else{
-                    return;
+                if (!this.piezaCome(cuadros, posI_actual, posJ_der)) {
+                   return;
                 }
             }
         }
@@ -165,7 +162,7 @@ class Tablero extends Component {
     }
     piezaCome(cuadros,posI, posJ) {
         
-        //  la pieza que come y la que se intenta comer son de colores distintos
+        //  la pieza que come y la que se intenta comer son de igual color
         if ( this.getColorPieza(this.i_anterior,this.j_anterior) === this.getColorPieza(posI, posJ)) {
             
             return false;
