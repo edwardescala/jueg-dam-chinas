@@ -18,58 +18,59 @@ class Tablero extends Component {
             ],
             juegan_las_blancas : true,
         }
-        this.nroClicks = 0; 
-       this.i_anterior = null;//posicion i  anterior
-        this.j_anterior = null;//posicion j anterior
-        this.direccion = null; //indica si  se movio a la derecha o a la izquierda cuando se dan 2 pasos
-    }
-    handleClick(i, j, e) {
+        this.clicks = 0; 
+        this.i_anterior = null; //posicion i  anterior
+        this.j_anterior = null; //posicion j anterior
         
-        this.nroClicks++;
+    }
+    handleClick(i, j) {
+        
+        this.clicks++;
         
         /**
          * si el numero de clicks es par y la posicion del segundo click es distinta a la primera.
          * Esto evita tomar en cuenta a clicks sobre el mismo cuadro*/
-        if (this.nroClicks % 2 === 0 && i !==this.i_anterior && j !== this.j_anterior) {
+        if (this.clicks % 2 === 0 && i !==this.i_anterior && j !== this.j_anterior) {
             
-            const colorPiezaAnterior = this.getColorPieza(this.i_anterior,this.j_anterior);
+            //color de la pieza anterior
+            const color_pieza_anterior = this.getColorPieza(this.i_anterior,this.j_anterior);
             
-            let unPasoALaDerecha;
-            let unPasoALaIzquierda;
+            let un_paso_der; //sera verdadero si se mueve un paso a la derecha
+            let un_paso_izq; //sera verdadero si se mueve un paso a la izquierda
 
-            let dosPasosALaDerecha;
-            let dosPasosALaIzquierda;
+            let dos_pasos_der; //sera verdadero si se mueve dos pasos a la derecha
+            let dos_pasos_izq; //sera verdadero si se mueve dos pasos a la izquierda
             
-            let i_actual;
-            const j_actual = this.j_anterior + 1;
-            const j_actual_izq = this.j_anterior - 1;
+            let posI_actual;
+            const posJ_der = this.j_anterior + 1;
+            const posJ_izq = this.j_anterior - 1;
             /**
              * si es verdadero, la pieza que se intenta mover es blanca
              * sino, la pieza es negra*/
-            if (colorPiezaAnterior === 'Blanco') {
+            if (color_pieza_anterior === 'Blanco') {
 
-                i_actual =this.i_anterior + 1;
+                posI_actual =this.i_anterior + 1;
                 /**
                 * Se Movera la pieza de cuadro en cuadro, a la izquierda o a la derecha
                 * Se verifica la posicion actual, usando la anterior*/
-                unPasoALaDerecha = i_actual === i && j_actual===j;
-                unPasoALaIzquierda = i_actual === i && j_actual_izq===j;
+                un_paso_der = posI_actual === i && posJ_der===j;
+                un_paso_izq = posI_actual === i && posJ_izq===j;
                 
                 /**
                 *  se Movera la pieza saltando un cuadro, a la izquierda o a la derecha
                 * Se verifica la posicion actual, usando la anterior*/
-                dosPasosALaDerecha =this.i_anterior + 2 === i && this.j_anterior + 2 === j;
-                dosPasosALaIzquierda =this.i_anterior  + 2 === i && this.j_anterior - 2 === j;
+                dos_pasos_der =this.i_anterior + 2 === i && this.j_anterior + 2 === j;
+                dos_pasos_izq =this.i_anterior  + 2 === i && this.j_anterior - 2 === j;
             
-            }else{
+            }else{  //la pieza a mover es negra
 
-                i_actual = this.i_anterior - 1;
+                posI_actual = this.i_anterior - 1;
 
-                unPasoALaDerecha = i_actual === i && j_actual ===j;
-                unPasoALaIzquierda = i_actual === i && j_actual_izq === j;
+                un_paso_der = posI_actual === i && posJ_der ===j;
+                un_paso_izq = posI_actual === i && posJ_izq === j;
 
-                dosPasosALaDerecha =this.i_anterior - 2 === i && this.j_anterior + 2 ===j;
-                dosPasosALaIzquierda =this.i_anterior  - 2 === i && this.j_anterior - 2 === j;
+                dos_pasos_der =this.i_anterior - 2 === i && this.j_anterior + 2 ===j;
+                dos_pasos_izq =this.i_anterior  - 2 === i && this.j_anterior - 2 === j;
                
             }
             
@@ -78,17 +79,17 @@ class Tablero extends Component {
              *  era donde estaba la pieza, se mueve la pieza*/
             if (this.estaVacio(i,j)) {
 
-                if (unPasoALaDerecha || unPasoALaIzquierda) {
+                if (un_paso_der || un_paso_izq) {
                     this.moverPieza(i,j,this.i_anterior, this.j_anterior);
                 }
 
                 
-                if (dosPasosALaDerecha) {//muevo 
-                   this.moverPieza(i,j,this.i_anterior, this.j_anterior, i_actual, j_actual, j_actual_izq, false );
+                if (dos_pasos_der) {//muevo 
+                   this.moverPieza(i,j,this.i_anterior, this.j_anterior, posI_actual, posJ_der, posJ_izq, false );
                 
                 }else{
-                    if (dosPasosALaIzquierda) {
-                        this.moverPieza(i,j,this.i_anterior, this.j_anterior,i_actual, j_actual, j_actual_izq,true);
+                    if (dos_pasos_izq) {
+                        this.moverPieza(i,j,this.i_anterior, this.j_anterior,posI_actual, posJ_der, posJ_izq,true);
                     }
                 }
                 
@@ -127,39 +128,30 @@ class Tablero extends Component {
         }
         return colorActual;
     }
-    moverPieza(i,j,i_anterior,j_anterior,i_actual, j_actual, j_actual_izq,dos_pasos_izq=null) {
+    moverPieza(i,j,i_anterior,j_anterior,posI_actual, posJ_der, posJ_izq,dos_pasos_izq=null) {
 
         const cuadros = this.state.cuadros.slice();
-        const color_pieza = this.getColorPieza(i_anterior,j_anterior);
-        if (dos_pasos_izq) {//se intento comer una pieza hacia a la izquierda
-            // y la pieza que come y la que se intenta comer son de colores distintos
-            if ( color_pieza !== this.getColorPieza(i_actual, j_actual_izq)) {
-                if (cuadros[i_actual][j_actual_izq].length > 1) {
-                    cuadros[i_actual][j_actual_izq] = ' ';
-                }else{
-                    return;
-                }
+        
+        if (dos_pasos_izq) {//se intento comer una pieza hacia la izquierda
+            
+            if (this.piezaCome(cuadros, posI_actual, posJ_izq)) {
                 
             }else{
                 return;
             }
-            
         
         }else{
-            if (dos_pasos_izq !== null) {//se intento comer una pieza hacia a la derecha
-                // y la pieza que come y la que se intenta comer son de colores distintos
-                if (color_pieza !== this.getColorPieza(i_actual, j_actual)) {
-                    if (cuadros[i_actual][j_actual].length > 1) {
-                        cuadros[i_actual][j_actual] = ' '; 
-                    }else{
-                        return;
-                    }
-                    
+            if (dos_pasos_izq !== null) {//se intento comer una pieza hacia a lreturn;a derecha
+
+                if (this.piezaCome(cuadros, posI_actual, posJ_der)) {
+                   
                 }else{
                     return;
                 }
             }
         }
+        const color_pieza = this.getColorPieza(i_anterior,j_anterior);
+
         if ( (this.state.juegan_las_blancas && color_pieza === 'Negro') || (!this.state.juegan_las_blancas && color_pieza === 'Blanco')) {
             return;
         }
@@ -170,6 +162,21 @@ class Tablero extends Component {
             cuadros : cuadros,
             juegan_las_blancas : !this.state.juegan_las_blancas,
         })
+    }
+    piezaCome(cuadros,posI, posJ) {
+        
+        //  la pieza que come y la que se intenta comer son de colores distintos
+        if ( this.getColorPieza(this.i_anterior,this.j_anterior) === this.getColorPieza(posI, posJ)) {
+            
+            return false;
+            
+        }else{
+           
+            if (cuadros[posI][posJ].length > 1) {
+                cuadros[posI][posJ] = ' '; 
+            } 
+            return true;
+        }
     }
     render() {
         const turno = this.state.juegan_las_blancas ? 'juegan las blancas' : 'juegan las negras';
