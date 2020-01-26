@@ -16,7 +16,7 @@ class Tablero extends Component {
                 ['', 'peonN','', 'peonN', '', 'peonN', '', 'peonN'],
                 ['arfilN', '', 'caballoN', '', 'arfilN', '', 'caballoN', ''],
             ],
-            juegan_las_blancas : true,
+            jueg_blancas : true,
             
         }
         this.clicks = 0; 
@@ -107,7 +107,7 @@ class Tablero extends Component {
     
     estaVacio(i, j) {
         
-        if ( this.state.cuadros[i][j].length ===1 ) {
+        if ( this.state.cuadros[i][j].length <= 1 ) {
             return true;
         
         }else{
@@ -119,8 +119,8 @@ class Tablero extends Component {
         
         const cuadroAnterior = this.state.cuadros[x][y];
         const caracter = cuadroAnterior.charAt(cuadroAnterior.length - 1) ;
-        let colorActual;
         
+        let colorActual;
         if (caracter === 'N') {
             colorActual = 'Negro';
         
@@ -133,31 +133,41 @@ class Tablero extends Component {
 
         const cuadros = this.state.cuadros.slice();
         
+        let pieza_sigu_com = false; // sera true si la pieza puede seguir comiendo
+        
         if (dos_pasos_izq) {//se intento comer una pieza hacia la izquierda
             
+            pieza_sigu_com = this.piezaSigueComiendo(i,j);
+            // si la pieza no puede comer evito que pueda ser movida
             if (!this.piezaCome(cuadros, posI_actual, posJ_izq)) {
                 return;
             }
+            
         
         }else{
-            if (dos_pasos_izq !== null) {//se intento comer una pieza hacia a lreturn;a derecha
+            if (dos_pasos_izq !== null) {//se intento comer una pieza hacia la derecha
+
+                pieza_sigu_com = this.piezaSigueComiendo(i,j);
 
                 if (!this.piezaCome(cuadros, posI_actual, posJ_der)) {
                    return;
                 }
             }
         }
+        
         const color_pieza = this.getColorPieza(i_anterior,j_anterior);
 
-        if ( (this.state.juegan_las_blancas && color_pieza === 'Negro') || (!this.state.juegan_las_blancas && color_pieza === 'Blanco')) {
+        if ( (this.state.jueg_blancas && color_pieza === 'Negro') || (!this.state.jueg_blancas && color_pieza === 'Blanco')) {
             return;
         }
         cuadros[i][j] = cuadros[i_anterior][j_anterior];
         cuadros[i_anterior][j_anterior] = ' ';
-            
+
+       // alert('sigo comiendo '+pieza_sigu_com+' juegan las blancas ' + this.state.jueg_blancas);
+
         this.setState({
             cuadros : cuadros,
-            juegan_las_blancas : !this.state.juegan_las_blancas,
+            jueg_blancas : !pieza_sigu_com ? !this.state.jueg_blancas : this.state.jueg_blancas,
         })
     }
     piezaCome(cuadros,posI, posJ) {
@@ -175,8 +185,58 @@ class Tablero extends Component {
             return true;
         }
     }
+    piezaSigueComiendo(i,j) {
+
+        let posI_mas1 = null;
+        let posI_mas2 = null;
+
+        const posJ_der = j + 1;
+        const posJ_izq = j - 1;
+        
+        if (this.getColorPieza(this.i_anterior, this.j_anterior) === 'Blanco') {
+            posI_mas1 = i + 1;
+            posI_mas2 = i + 2;
+        
+        }else{
+            posI_mas1 = i - 1;
+            posI_mas2 = i - 2;
+        }
+        const cuadros = this.state.cuadros;
+        
+        //compruebo si existe un primer cuadro a la derecha
+        
+        
+        //compruebo si existe un segundo cuadro a la izquierda
+    if (cuadros[posI_mas2]) {
+        
+        if (cuadros[posI_mas2][posJ_der + 1]) { 
+
+            const mov_a_der = !this.estaVacio(posI_mas1,posJ_der) && this.estaVacio(posI_mas2, posJ_der + 1);
+            
+            if (mov_a_der) {
+                
+                
+                return true; 
+            }
+        }
+    
+        if (cuadros[posI_mas2][posJ_izq - 1]) { 
+
+            const mov_a_iz = !this.estaVacio(posI_mas1,posJ_izq ) && this.estaVacio(posI_mas2,posJ_izq - 1);
+    
+            if (mov_a_iz) {
+                
+                return true; 
+            }
+        }
+        return false;
+    }
+       
+      
+        
+    }
     render() {
-        const turno = this.state.juegan_las_blancas ? 'juegan las blancas' : 'juegan las negras';
+        const turno = this.state.jueg_blancas ? 'juegan las blancas' : 'juegan las negras';
         return (
             <div className = "contenedor">
                 <div>{turno}</div>
