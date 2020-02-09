@@ -1,11 +1,11 @@
 import React from 'react';
 //import logo from './logo.svg';
 import './App.css';
-import Tablero from './Tablero';
+import Juego from './Juego';
 
 function App() {
   return (
-    <Tablero/>
+    <Juego/>
   );
 }
 
