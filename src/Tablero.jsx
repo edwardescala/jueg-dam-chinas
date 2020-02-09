@@ -125,7 +125,9 @@ class Tablero extends Component {
             colorActual = 'Negro';
         
         }else{
-            colorActual = 'Blanco';
+            if (caracter === 'B'){
+                colorActual = 'Blanco';
+            }
         }
         return colorActual;
     }
