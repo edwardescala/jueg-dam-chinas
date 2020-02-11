@@ -76,7 +76,7 @@ class Juego extends Component {
                
             }
             if (this.piezaEsCorona(this.i_anterior, this.j_anterior)) {
-               
+               alert ()
                 un_paso_der = true;
                 
             }
@@ -89,7 +89,6 @@ class Juego extends Component {
                     this.moverPieza(i,j,this.i_anterior, this.j_anterior);
                 }
 
-                
                 if (dos_pasos_der) {//muevo 
                    this.moverPieza(i,j,this.i_anterior, this.j_anterior, posI_actual, posJ_der, posJ_izq, false );
                 
@@ -140,13 +139,17 @@ class Juego extends Component {
 
         const cuadros = this.state.cuadros.slice();
         
-        let pieza_sigu_com = false; // sera true si la pieza puede seguir comiendo
+        let pieza_sigue_comiendo = false; // sera true si la pieza puede seguir comiendo
         
         if (dos_pasos_izq) {//se intento comer una pieza hacia la izquierda
             
-            pieza_sigu_com = this.piezaSigueComiendo(i,j);
+            pieza_sigue_comiendo = this.piezaPuedeComer(i,j);
             // si la pieza no puede comer evito que pueda ser movida
-            if (!this.piezaComio(cuadros, posI_actual, posJ_izq)) {
+
+            if (this.piezaPuedeComer(i_anterior,j_anterior)) {
+                this.ComerPieza(cuadros, posI_actual, posJ_izq)
+            
+            }else{
                 return;
             }
             
@@ -154,13 +157,18 @@ class Juego extends Component {
         }else{
             if (dos_pasos_izq !== null) {//se intento comer una pieza hacia la derecha
 
-                pieza_sigu_com = this.piezaSigueComiendo(i,j);
+                pieza_sigue_comiendo = this.piezaPuedeComer(i,j);
 
-                if (!this.piezaComio(cuadros, posI_actual, posJ_der)) {
-                   return;
+                if (this.piezaPuedeComer(i_anterior,j_anterior)) {
+                    this.ComerPieza(cuadros, posI_actual, posJ_der)
+                
+                }else{
+                    return;
                 }
             }
         }
+      
+        
         
         const color_pieza = this.getColorPieza(i_anterior,j_anterior);
 
@@ -175,25 +183,21 @@ class Juego extends Component {
 
         this.setState({
             cuadros : cuadros,
-            jueg_blancas : !pieza_sigu_com ? !this.state.jueg_blancas : this.state.jueg_blancas,
+            jueg_blancas : !pieza_sigue_comiendo ? !this.state.jueg_blancas : this.state.jueg_blancas,
         })
     }
-    piezaComio(cuadros,posI, posJ) {
+    ComerPieza(cuadros,posI, posJ) {
         
         //  la pieza que come y la que se intenta comer son de igual color
-        if ( this.getColorPieza(this.i_anterior,this.j_anterior) === this.getColorPieza(posI, posJ)) {
+        if ( this.getColorPieza(this.i_anterior,this.j_anterior) !== this.getColorPieza(posI, posJ)) {
             
-            return false;
-            
-        }else{
-           
             if (cuadros[posI][posJ].length > 1) {
                 cuadros[posI][posJ] = ' '; 
             } 
-            return true;
+            
         }
     }
-    piezaSigueComiendo(i,j) {
+    piezaPuedeComer(i,j) {
 
         let posI_mas1 = null;
         let posI_mas2 = null;
@@ -218,12 +222,12 @@ class Juego extends Component {
     if (cuadros[posI_mas2]) {
         
         if (cuadros[posI_mas2][posJ_der + 1]) { 
-
+            
             const mov_a_der = !this.estaVacio(posI_mas1,posJ_der) && this.estaVacio(posI_mas2, posJ_der + 1);
             
             if (mov_a_der) {
                 
-                
+            
                 return true; 
             }
         }
