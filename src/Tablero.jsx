@@ -15,7 +15,7 @@ class Tablero extends Component {
                             return value1.map((value2, index2) => {
                                     return(
                                         <Cuadro key={index2} 
-                                        value={value2.length >1 ? value2.replace(value2.charAt(value2.length-1),'') : value2} 
+                                        value={value2} 
                                         color = {this.props.getColorPieza(index1, index2)}
                                         onClick={ value2 ? ()=>{this.props.onClick(index1, index2)} : null}
                                         />

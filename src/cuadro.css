@@ -9,17 +9,38 @@
 }
 .cuadro-blanco {
     background: rgb(214, 214, 196);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
     
 }
-.pieza-blanca {
+.peonB {
     background-image: url(./peon.svg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
+    
 }
-.pieza-negra {
+.peonN {
     background-image: url(./peon-negro.svg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
+}
+.torreB{
+    background-image: url(./torreB.svg);
+
+}
+.torreN {
+    background-image: url(./torreN.svg);
+}
+.caballoB {
+    background-image: url(./caballoB.svg);
+
+}
+.caballoN {
+    background-image: url(./caballoN.svg);
+
+}
+.arfilN {
+    background-image: url(./arfilN.svg);
+
+}
+.arfilB {
+    background-image: url(./arfilB.svg);
+
 }

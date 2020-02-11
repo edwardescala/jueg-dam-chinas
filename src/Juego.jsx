@@ -18,13 +18,15 @@ class Juego extends Component {
             jueg_blancas : true,
             
         }
-        this.clicks = 0; 
+        this.clicks = 0;
+        this.posI_final = null; 
+        this.posJ_final = null;
+
         this.i_anterior = null; //posicion i  anterior
         this.j_anterior = null; //posicion j anterior
         
     }
     handleClick(i, j) {
-        
         this.clicks++;
         
         /**
@@ -47,7 +49,7 @@ class Juego extends Component {
             /**
              * si es verdadero, la pieza que se intenta mover es blanca
              * sino, la pieza es negra*/
-            if (color_pieza_anterior === 'Blanco') {
+            if (color_pieza_anterior === 'Blanco' && !this.piezaEsCorona(this.i_anterior, this.j_anterior)) {
 
                 posI_actual =this.i_anterior + 1;
                 /**
@@ -62,7 +64,7 @@ class Juego extends Component {
                 dos_pasos_der =this.i_anterior + 2 === i && this.j_anterior + 2 === j;
                 dos_pasos_izq =this.i_anterior  + 2 === i && this.j_anterior - 2 === j;
             
-            }else{  //la pieza a mover es negra
+            }else if(color_pieza_anterior === 'Negro' && !this.piezaEsCorona(this.i_anterior,this.j_anterior)){  //la pieza a mover es negra
 
                 posI_actual = this.i_anterior - 1;
 
@@ -73,7 +75,11 @@ class Juego extends Component {
                 dos_pasos_izq =this.i_anterior  - 2 === i && this.j_anterior - 2 === j;
                
             }
-            
+            if (this.piezaEsCorona(this.i_anterior, this.j_anterior)) {
+               
+                un_paso_der = true;
+                
+            }
             /**
              * si el cuadro actual esta vacio y el anterior cuadro pulsado
              *  era donde estaba la pieza, se mueve la pieza*/
@@ -140,7 +146,7 @@ class Juego extends Component {
             
             pieza_sigu_com = this.piezaSigueComiendo(i,j);
             // si la pieza no puede comer evito que pueda ser movida
-            if (!this.piezaCome(cuadros, posI_actual, posJ_izq)) {
+            if (!this.piezaComio(cuadros, posI_actual, posJ_izq)) {
                 return;
             }
             
@@ -150,7 +156,7 @@ class Juego extends Component {
 
                 pieza_sigu_com = this.piezaSigueComiendo(i,j);
 
-                if (!this.piezaCome(cuadros, posI_actual, posJ_der)) {
+                if (!this.piezaComio(cuadros, posI_actual, posJ_der)) {
                    return;
                 }
             }
@@ -164,14 +170,15 @@ class Juego extends Component {
         cuadros[i][j] = cuadros[i_anterior][j_anterior];
         cuadros[i_anterior][j_anterior] = ' ';
 
-       // alert('sigo comiendo '+pieza_sigu_com+' juegan las blancas ' + this.state.jueg_blancas);
+        this.posI_final = i;
+        this.posJ_final = j;
 
         this.setState({
             cuadros : cuadros,
             jueg_blancas : !pieza_sigu_com ? !this.state.jueg_blancas : this.state.jueg_blancas,
         })
     }
-    piezaCome(cuadros,posI, posJ) {
+    piezaComio(cuadros,posI, posJ) {
         
         //  la pieza que come y la que se intenta comer son de igual color
         if ( this.getColorPieza(this.i_anterior,this.j_anterior) === this.getColorPieza(posI, posJ)) {
@@ -232,8 +239,28 @@ class Juego extends Component {
         }
         return false;
     }
-       
-      
+    }
+    piezaEsCorona(posI,posJ) {
+        const cuadros = this.state.cuadros;
+        if (cuadros[posI][posJ].includes('torre') || cuadros[posI][posJ].includes('rey')) {
+            
+            return true;
+        }
+        return false;
+    }
+    shouldComponentUpdate(nextProps, nextState){
+        const cuadros = nextState.cuadros.slice();
+        
+        if (this.posI_final === 7 && this.getColorPieza(7, this.posJ_final) === 'Blanco') {
+ 
+           cuadros[7][this.posJ_final] = 'torreB';
+            
+           this.setState({
+                cuadros : cuadros
+            })
+        }
+
+        return true;
         
     }
     render() {
